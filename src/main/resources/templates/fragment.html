@@ -3,7 +3,7 @@
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${title}">socialN2</title>
+    <title th:text="${title}">SpringBook</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <style>
         .avatar     { width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: 600;
@@ -23,7 +23,7 @@
 <body>
 <nav class="navbar navbar-expand navbar-white bg-primary shadow-sm sticky-top" th:fragment="navbar(me, q)">
     <div class="container">
-        <a class="brand text-decoration-none" th:href="@{/}">socialN2</a>
+        <a class="brand text-decoration-none" th:href="@{/}">SpringBook</a>
         <form class="ms-3 d-none d-md-block" method="get" th:action="@{/}">
             <div class="input-group">
                 <input class="form-control navbar-search ps-3" type="search" name="q"
