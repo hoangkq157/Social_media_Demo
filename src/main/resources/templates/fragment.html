@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title}">Mạng xã hội Nhóm 2</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary" th:fragment="navbar(fullName)">
+    <div class="container">
+        <a class="navbar-brand fw-bold" th:href="@{/}">📘 SocialNhóm2</a>
+        <span class="navbar-text text-white">
+            Xin chào, <b th:text="${fullName}">thành viên</b>
+            <a th:href="@{/logout}" class="btn btn-sm btn-outline-light ms-2">Đăng xuất</a>
+        </span>
+    </div>
+</nav>
+</body>
+</html>

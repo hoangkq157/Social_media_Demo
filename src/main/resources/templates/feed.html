@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragment :: head('Bảng tin — SocialNhóm2')}"></head>
+<body class="bg-light">
+<div th:replace="~{fragment :: navbar(${fullName})}"></div>
+
+<div class="container" style="max-width: 720px;">
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <h4 class="mb-0">Bảng tin</h4>
+        <a th:href="@{/posts/new}" class="btn btn-primary">✏️ Đăng bài</a>
+    </div>
+
+    <!-- Moi bai viet = 1 card -->
+    <div class="card shadow-sm mb-4" th:each="post : ${posts}" th:attr="id=${'post-' + post.id}">
+        <div class="card-body">
+            <h5 class="card-title mb-1" th:text="${post.title}">Tiêu đề bài viết</h5>
+            <p class="text-muted small mb-2">
+                ✍️ <b th:text="${post.user.fullName}">Tác giả</b> ·
+                <span th:text="${post.createdAtFormatted}">thời gian</span>
+            </p>
+            <p class="card-text" th:text="${post.content}">Nội dung bài viết.</p>
+
+            <hr class="my-3">
+            <p class="text-muted small mb-2">
+                💬 Bình luận (<span th:text="${#lists.size(post.comments)}">0</span>)
+            </p>
+
+            <!-- Danh sach binh luan cua bai -->
+            <div class="bg-body-tertiary rounded p-2 mb-2"
+                 th:each="c : ${post.comments}">
+                <span class="small">
+                    <b th:text="${c.user.fullName}">Người bình luận</b>
+                    <span class="text-muted" th:text="${c.createdAtFormatted}"> · </span><br>
+                    <span th:text="${c.content}">Nội dung bình luận</span>
+                </span>
+            </div>
+
+            <!-- Form binh luan (tinh nang 3) -->
+            <form method="post" th:action="@{/comments/create}" class="d-flex gap-2">
+                <input type="hidden" name="postId" th:value="${post.id}">
+                <input type="text" name="content" class="form-control" required
+                       placeholder="Viết bình luận...">
+                <button type="submit" class="btn btn-outline-primary">Gửi</button>
+            </form>
+        </div>
+    </div>
+
+    <p class="text-center text-muted" th:if="${#lists.isEmpty(posts)}">
+        Chưa có bài viết nào. Hãy là người đăng bài đầu tiên!
+    </p>
+</div>
+
+<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>
