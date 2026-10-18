@@ -1,4 +1,4 @@
-# nhom2-springboot-social
+# Social_media_Demo
 
 Demo **mạng xã hội đơn giản** bằng **Spring Boot** — bài giữa kì môn PTPM hướng đối tượng, **Nhóm 2** (chủ đề: Spring Boot).
 
@@ -26,8 +26,8 @@ Kiểm tra: mở terminal gõ `java -version` (phải ra 21.x) và `git --versio
 
 ## Cách chạy (3 bước)
 ```bash
-git clone <link-repo-này>
-cd nhom2-springboot-social
+git clone https://github.com/hoangkq157/Social_media_Demo.git
+cd Social_media_Demo
 .\mvnw.cmd spring-boot:run
 ```
 App chạy tại **http://localhost:8080** (lần đầu chạy Maven tự tải dependency vài phút).

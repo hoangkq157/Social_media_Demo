@@ -3,17 +3,40 @@
 <head th:fragment="head(title)">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title th:text="${title}">Mạng xã hội Nhóm 2</title>
+    <title th:text="${title}">socialN2</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        .avatar     { width: 40px; height: 40px; border-radius: 50%; color: #fff; font-weight: 600;
+                      display: inline-flex; align-items: center; justify-content: center; flex: none; }
+        .avatar-sm  { width: 32px; height: 32px; font-size: .8rem; }
+        .avatar-lg  { width: 48px; height: 48px; font-size: 1.1rem; }
+        body        { background: #f0f2f5; }
+        .brand      { font-size: 1.45rem; font-weight: 800; color: #fff; letter-spacing: -.5px; }
+        .navbar-search { background: #ffffff33; border: none; border-radius: 50rem; color: #fff; min-width: 220px; }
+        .navbar-search::placeholder { color: #ffffffcc; }
+        .navbar-search:focus { background: #fff; color: #212529; box-shadow: none; }
+        .hover-shadow:hover { box-shadow: 0 1px 6px rgba(0,0,0,.15); }
+        .comment-bubble { background: #f0f2f5; border-radius: 1rem; padding: .45rem .8rem; }
+        .post-content   { white-space: pre-wrap; font-size: 1.02rem; }
+    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary" th:fragment="navbar(fullName)">
+<nav class="navbar navbar-expand navbar-white bg-primary shadow-sm sticky-top" th:fragment="navbar(me, q)">
     <div class="container">
-        <a class="navbar-brand fw-bold" th:href="@{/}">📘 SocialNhóm2</a>
-        <span class="navbar-text text-white">
-            Xin chào, <b th:text="${fullName}">thành viên</b>
-            <a th:href="@{/logout}" class="btn btn-sm btn-outline-light ms-2">Đăng xuất</a>
-        </span>
+        <a class="brand text-decoration-none" th:href="@{/}">socialN2</a>
+        <form class="ms-3 d-none d-md-block" method="get" th:action="@{/}">
+            <div class="input-group">
+                <input class="form-control navbar-search ps-3" type="search" name="q"
+                       placeholder="Tìm kiếm bài viết..." th:value="${q}">
+            </div>
+        </form>
+        <div class="ms-auto d-flex align-items-center gap-2">
+            <span class="d-none d-lg-inline text-white small" th:text="${me != null} ? ${me.fullName} : ''">Thành viên</span>
+            <span class="avatar" th:if="${me != null}"
+                  th:style="'background:' + ${me.avatarColor}"
+                  th:text="${me.initials}">A</span>
+            <a th:href="@{/logout}" class="btn btn-sm btn-light text-primary fw-semibold">Đăng xuất</a>
+        </div>
     </div>
 </nav>
 </body>

@@ -23,15 +23,17 @@ public class PostController {
         this.userService = userService;
     }
 
-    /** Bang tin - chua dang nhap thi day ve /login. */
+    /** Bang tin - chua dang nhap thi day ve /login. Ho tro ?q= tim kiem. */
     @GetMapping("/")
-    public String feed(Model model, HttpServletRequest request) {
+    public String feed(@RequestParam(required = false) String q, Model model, HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("username") == null) {
             return "redirect:/login";
         }
-        model.addAttribute("fullName", session.getAttribute("fullName"));
-        model.addAttribute("posts", postService.getFeed());
+        User me = userService.findByUsername((String) session.getAttribute("username")).orElse(null);
+        model.addAttribute("me", me);
+        model.addAttribute("q", q == null ? "" : q);
+        model.addAttribute("posts", postService.getFeed(q));
         return "feed";
     }
 
@@ -41,7 +43,8 @@ public class PostController {
         if (session == null || session.getAttribute("username") == null) {
             return "redirect:/login";
         }
-        model.addAttribute("fullName", session.getAttribute("fullName"));
+        User me = userService.findByUsername((String) session.getAttribute("username")).orElse(null);
+        model.addAttribute("me", me);
         return "post-form";
     }
 

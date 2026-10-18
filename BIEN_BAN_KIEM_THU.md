@@ -35,6 +35,6 @@
 | Demo ≥ 2 tính năng dựa trên 3 bảng | ✅ | 3 tính năng (vượt yêu cầu) |
 | Có giao diện, thao tác ≥ 2 bảng | ✅ | Thymeleaf + Bootstrap; demo chạm cả 3 bảng |
 | CSDL mã nguồn mở / miễn phí | ✅ | H2 (EPL/MPL), JDK, VS Code, Maven, Git đều miễn phí |
-| Code lên Git kèm script CSDL | ✅ | github.com/hoangkq157/nhom2-springboot-social + database/schema.sql + data.sql |
+| Code lên Git kèm script CSDL | ✅ | github.com/hoangkq157/Social_media_Demo + database/schema.sql + data.sql |
 
 *Biên bản lập bởi quá trình kiểm thử tự động có bằng chứng log kèm theo.*

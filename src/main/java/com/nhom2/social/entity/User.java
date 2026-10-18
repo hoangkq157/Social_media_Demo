@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 public class User {
 
+    private static final String[] AVATAR_COLORS = {"1877F2", "E8453C", "F0A02A", "8B5CF6", "16A34A", "EC4899"};
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,6 +42,25 @@ public class User {
         this.email = email;
         this.password = password;
         this.fullName = fullName;
+    }
+
+    /** Chu cai dau lam anh dai dien (FB-style avatar chu). */
+    public String getInitials() {
+        if (fullName == null || fullName.isBlank()) {
+            return username == null || username.isBlank() ? "?" : username.substring(0, 1).toUpperCase();
+        }
+        String[] parts = fullName.trim().split("\s+");
+        String ini = parts[0].substring(0, 1);
+        if (parts.length > 1) {
+            ini += parts[parts.length - 1].substring(0, 1);
+        }
+        return ini.toUpperCase();
+    }
+
+    /** Ma on dinh theo username de chon mau avatar. */
+    public String getAvatarColor() {
+        int h = username == null ? 0 : Math.abs(username.hashCode());
+        return "#" + AVATAR_COLORS[h % AVATAR_COLORS.length];
     }
 
     public Long getId() { return id; }

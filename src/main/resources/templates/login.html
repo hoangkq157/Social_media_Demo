@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragment :: head('Đăng nhập — SocialNhóm2')}"></head>
-<body class="bg-light">
-<div class="container" style="max-width: 430px; margin-top: 10%;">
-    <div class="card shadow-sm">
-        <div class="card-body p-4">
-            <h3 class="text-center mb-1">📘 SocialNhóm2</h3>
-            <p class="text-center text-muted mb-4">Demo Spring Boot + H2 — Nhóm 2</p>
-
-            <div class="alert alert-danger py-2" th:if="${param.error}">
-                Sai tên đăng nhập hoặc mật khẩu!
-            </div>
-
-            <form method="post" th:action="@{/login}">
-                <div class="mb-3">
-                    <label class="form-label">Tên đăng nhập</label>
-                    <input type="text" name="username" class="form-control" required autofocus
-                           placeholder="vd: an">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Mật khẩu</label>
-                    <input type="password" name="password" class="form-control" required
-                           placeholder="vd: 123456">
-                </div>
-                <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
-            </form>
-
-            <p class="text-center text-muted small mt-4 mb-0">
-                Tài khoản mẫu: <b>an</b> / <b>binh</b> / <b>chi</b> — mật khẩu <b>123456</b>
+<head th:replace="~{fragment :: head('Đăng nhập — socialN2')}"></head>
+<body>
+<div class="container" style="max-width: 980px; margin-top: 8vh;">
+    <div class="row justify-content-center align-items-center g-5">
+        <div class="col-md-5 text-md-end">
+            <div class="brand" style="font-size: 3.4rem; color: #1877F2;">socialN2</div>
+            <p class="fs-5 mt-2">
+                Mạng xã hội demo của Nhóm 2 — xây dựng bằng
+                <b>Spring Boot</b> và <b>H2</b>, giúp bạn kết nối và chia sẻ.
             </p>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow p-4 rounded-3">
+                <div class="alert alert-danger py-2 small" th:if="${param.error}">
+                    Sai tên đăng nhập hoặc mật khẩu. Vui lòng thử lại!
+                </div>
+                <form method="post" th:action="@{/login}">
+                    <input type="text" name="username" class="form-control form-control-lg mb-3"
+                           placeholder="Tên đăng nhập" required autofocus>
+                    <input type="password" name="password" class="form-control form-control-lg mb-3"
+                           placeholder="Mật khẩu" required>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-semibold">Đăng nhập</button>
+                </form>
+                <hr>
+                <div class="text-center small text-muted">
+                    Tài khoản mẫu: <b>an</b> · <b>binh</b> · <b>chi</b> — mật khẩu <b>123456</b>
+                </div>
+            </div>
         </div>
     </div>
 </div>

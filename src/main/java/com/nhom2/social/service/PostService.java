@@ -17,8 +17,13 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public List<Post> getFeed() {
-        return postRepository.findAllByOrderByCreatedAtDesc();
+    public List<Post> getFeed(String q) {
+        if (q == null || q.isBlank()) {
+            return postRepository.findAllByOrderByCreatedAtDesc();
+        }
+        String key = q.trim();
+        return postRepository
+                .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCaseOrderByCreatedAtDesc(key, key);
     }
 
     public Optional<Post> getPost(Long id) {
