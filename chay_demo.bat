@@ -2,11 +2,15 @@
 chcp 65001 >nul
 title SpringBook - Demo nhom 2
 cd /d "%~dp0"
-if not exist "C:\lab-tools\jdk21\bin\java.exe" (
-  echo [!] Khong thay JDK 21 tai C:\lab-tools\jdk21 - hay cai JDK 21 truoc.
-  pause & exit /b 1
+if exist "C:\lab-tools\jdk21\bin\java.exe" (
+  set "JAVA_HOME=C:\lab-tools\jdk21"
+) else (
+  where java >nul 2>&1
+  if errorlevel 1 (
+    echo [!] Khong tim thay Java. Vui long cai JDK 21+ hoac copy vao C:\lab-tools\jdk21.
+    pause & exit /b 1
+  )
 )
-set "JAVA_HOME=C:\lab-tools\jdk21"
 echo ============================================
 echo   DANG BAT UNG DUNG SpringBook (demo Nhom 2)
 echo   Sau khi thay dong: Tomcat started on port 8080

@@ -11,15 +11,8 @@ Chờ tới khi log hiện dòng `Tomcat started on port 8080` (lần đầu ~1 
 ## Cách bật (cách 2 — bằng lệnh)
 Mở terminal (CMD/PowerShell/Git Bash) trong thư mục dự án:
 
-```cmd
-chay_demo.bat
-```
+.\mvnw.cmd spring-boot:run
 
-hoặc gõ tay:
-
-```cmd
-set JAVA_HOME=C:\lab-tools\jdk21
-mvnw.cmd spring-boot:run
 ```
 
 *(Máy chưa có JDK ở lab-tools: cài JDK 21 bất kỳ rồi chỉ JAVA_HOME tới thư mục cài.)*

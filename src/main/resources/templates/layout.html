@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="main(title, content, activeNav)">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CSRF Tokens cho AJAX -->
+  <meta name="_csrf" th:content="${_csrf != null ? _csrf.token : ''}" />
+  <meta name="_csrf_header" th:content="${_csrf != null ? _csrf.headerName : 'X-CSRF-TOKEN'}" />
+  <title th:text="${title != null ? title + ' | SpringBook' : 'SpringBook'}">SpringBook</title>
+  <!-- CSS noi bo -->
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+
+  <!-- ================= TOP NAVBAR (56px) ================= -->
+  <header class="fb-navbar-v2">
+    <!-- Ben trai: Logo S xanh & O tim kiem vien thuoc -->
+    <div class="fb-nav-left">
+      <a th:href="@{/}" class="fb-brand-circle" title="SpringBook">
+        S
+      </a>
+
+      <form th:action="@{/search}" method="get" class="fb-nav-search-pill">
+        <svg class="fb-svg-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#65676B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7.5"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text"
+               name="q"
+               th:value="${query}"
+               class="fb-nav-search-input"
+               placeholder="Tìm kiếm trên SpringBook"
+               autocomplete="off" />
+      </form>
+    </div>
+
+    <!-- O giua: 4 Tab Icon lon giong Facebook -->
+    <nav class="fb-nav-center">
+      <a th:href="@{/}"
+         class="fb-nav-tab-item"
+         th:classappend="${activeNav == 'feed'} ? 'active' : ''"
+         title="Trang chủ">
+        <th:block th:replace="~{fragments/icon :: icon((${activeNav == 'feed'} ? 'home-fill' : 'home'), 26)}" />
+      </a>
+      <a th:if="${currentUser != null}"
+         th:href="@{'/users/' + ${currentUser.username}(tab='videos')}"
+         class="fb-nav-tab-item"
+         th:classappend="${activeNav == 'videos'} ? 'active' : ''"
+         title="Thước phim & Video">
+        <th:block th:replace="~{fragments/icon :: icon('video', 26)}" />
+      </a>
+      <a th:href="@{/search(type='users')}"
+         class="fb-nav-tab-item"
+         th:classappend="${activeNav == 'search'} ? 'active' : ''"
+         title="Mọi người">
+        <th:block th:replace="~{fragments/icon :: icon('users', 26)}" />
+      </a>
+      <a th:if="${currentUser != null}"
+         th:href="@{'/users/' + ${currentUser.username}}"
+         class="fb-nav-tab-item"
+         th:classappend="${activeNav == 'profile'} ? 'active' : ''"
+         title="Trang cá nhân">
+        <th:block th:replace="~{fragments/icon :: icon((${activeNav == 'profile'} ? 'user-fill' : 'user'), 26)}" />
+      </a>
+    </nav>
+
+    <!-- Ben phai: Cac nut tron hanh dong + Avatar dropdown -->
+    <div class="fb-nav-right">
+      <!-- Nut Tao bai viet (+) -->
+      <button class="fb-circle-btn"
+              type="button"
+              data-bs-toggle="modal"
+              data-bs-target="#createPostModal"
+              title="Tạo bài viết mới">
+        <th:block th:replace="~{fragments/icon :: icon('plus', 20)}" />
+      </button>
+
+      <!-- Menu Grid 9-dots -->
+      <button class="fb-circle-btn d-none d-sm-flex" type="button" title="Menu">
+        <th:block th:replace="~{fragments/icon :: icon('grid', 18)}" />
+      </button>
+
+      <!-- Messenger -->
+      <button class="fb-circle-btn d-none d-sm-flex" type="button" title="Messenger">
+        <th:block th:replace="~{fragments/icon :: icon('messenger', 18)}" />
+      </button>
+
+      <!-- Notifications -->
+      <button class="fb-circle-btn d-none d-sm-flex" type="button" title="Thông báo">
+        <th:block th:replace="~{fragments/icon :: icon('bell', 18)}" />
+      </button>
+
+      <!-- User Avatar Dropdown -->
+      <div class="dropdown" th:if="${currentUser != null}">
+        <div class="fb-nav-avatar-wrap" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
+          <th:block th:replace="~{fragments/avatar :: avatar(${currentUser}, 'fb-avatar-md')}" />
+          <span class="fb-avatar-badge-arrow">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </span>
+        </div>
+
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="min-width: 270px; border-radius: 10px; padding: 8px; border: 1px solid rgba(0,0,0,0.1);">
+          <!-- The thong tin nguoi dung -->
+          <li class="px-3 py-2 border-bottom mb-2">
+            <a th:href="@{'/users/' + ${currentUser.username}}" class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+              <th:block th:replace="~{fragments/avatar :: avatar(${currentUser}, 'fb-avatar-md')}" />
+              <div class="overflow-hidden">
+                <div class="fw-bold text-truncate" th:text="${currentUser.fullName}">Tên người dùng</div>
+                <div class="small text-muted text-truncate">Xem trang cá nhân của bạn</div>
+              </div>
+            </a>
+          </li>
+
+          <li>
+            <a class="dropdown-item py-2 rounded d-flex align-items-center gap-3" th:href="@{'/users/' + ${currentUser.username}}">
+              <th:block th:replace="~{fragments/icon :: icon('user', 18)}" />
+              <span>Trang cá nhân</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item py-2 rounded d-flex align-items-center gap-3" th:href="@{/settings/profile}">
+              <th:block th:replace="~{fragments/icon :: icon('settings', 18)}" />
+              <span>Cài đặt & quyền riêng tư</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item py-2 rounded d-flex align-items-center gap-3 text-secondary" th:href="@{/h2-console}" target="_blank">
+              <th:block th:replace="~{fragments/icon :: icon('database', 18)}" />
+              <span>Quản trị CSDL (H2)</span>
+            </a>
+          </li>
+          <li><hr class="dropdown-divider my-2"></li>
+          <li>
+            <form th:action="@{/logout}" method="post">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <button type="submit" class="dropdown-item py-2 rounded text-danger d-flex align-items-center gap-3">
+                <th:block th:replace="~{fragments/icon :: icon('logout', 18)}" />
+                <span>Đăng xuất</span>
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= FLASH ALERTS ================= -->
+  <div class="fb-flash-container">
+    <div th:if="${successMessage}" class="fb-flash-alert fb-flash-success">
+      <svg class="fb-svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <span th:text="${successMessage}">Thao tác thành công!</span>
+    </div>
+    <div th:if="${errorMessage}" class="fb-flash-alert fb-flash-danger">
+      <svg class="fb-svg-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+      <span th:text="${errorMessage}">Đã xảy ra lỗi!</span>
+    </div>
+  </div>
+
+  <!-- ================= NOI DUNG CHINH ================= -->
+  <main class="flex-grow-1">
+    <th:block th:replace="${content}" />
+  </main>
+
+  <!-- JS noi bo -->
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+  <script th:src="@{/js/app.js}"></script>
+</body>
+</html>

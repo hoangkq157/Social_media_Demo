@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- Fragment dung chung render icon SVG tu sprite -->
+  <th:block th:fragment="icon(name, size)">
+    <svg th:class="'fb-svg-icon fb-icon-' + ${name}"
+         th:width="${size != null ? size : 20}"
+         th:height="${size != null ? size : 20}"
+         viewBox="0 0 24 24"
+         aria-hidden="true">
+      <use th:href="@{'/icons/sprite.svg#' + ${name}}" />
+    </svg>
+  </th:block>
+</body>
+</html>

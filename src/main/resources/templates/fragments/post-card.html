@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+  <!-- Danh sach cac post card (dung cho feed va ajax load more) -->
+  <th:block th:fragment="postList">
+    <th:block th:each="post : ${posts.content}">
+      <div th:replace="~{fragments/post-card :: postCard(${post})}" />
+    </th:block>
+    <div id="hasNextMarker" th:data-has-next="${hasNext}" style="display: none;"></div>
+  </th:block>
+
+  <!-- Fragment cho mot Post Card hoan chinh -->
+  <div th:fragment="postCard(post)" class="fb-card fb-post-card-item" th:id="'post-' + ${post.id}">
+
+    <!-- 1. Header: Avatar, Ten, Thoi gian · Globe, Menu chu bai -->
+    <div class="fb-post-header">
+      <div class="d-flex align-items-center gap-2">
+        <a th:href="@{'/users/' + ${post.authorUsername}}">
+          <th:block th:replace="~{fragments/avatar :: authorAvatar(${post.authorAvatarPath}, ${post.authorAvatarColor}, ${post.authorInitials}, ${post.authorFullName}, 'fb-avatar-md')}" />
+        </a>
+        <div>
+          <a th:href="@{'/users/' + ${post.authorUsername}}" class="fb-post-author-name" th:text="${post.authorFullName}">
+            Đặng Khoa
+          </a>
+          <div class="fb-post-time-meta">
+            <span th:text="${post.createdAtFormatted}">2 giờ</span>
+            <span>&bull;</span>
+            <th:block th:replace="~{fragments/icon :: icon('globe', 12)}" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu xoa bai (chi chu bai moi thay) -->
+      <div th:if="${post.isOwner}" class="dropdown">
+        <button class="fb-circle-btn" style="width: 34px; height: 34px;" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Tùy chọn">
+          <th:block th:replace="~{fragments/icon :: icon('more', 16)}" />
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm" style="border-radius: 8px; border: 1px solid rgba(0,0,0,0.1);">
+          <li>
+            <form th:action="@{'/posts/' + ${post.id} + '/delete'}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <button type="submit" class="dropdown-item text-danger d-flex align-items-center gap-2 py-2">
+                <th:block th:replace="~{fragments/icon :: icon('trash', 16)}" />
+                <span>Xóa bài viết</span>
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2. Noi dung bai viet -->
+    <div th:if="${post.content != null and !#strings.isEmpty(post.content)}"
+         class="fb-post-text"
+         th:classappend="${#strings.length(post.content) < 85 and (post.mediaPath == null or #strings.isEmpty(post.mediaPath))} ? 'short-text' : ''"
+         th:text="${post.content}">
+      Lý do cực kỳ thuyết phục
+    </div>
+
+    <!-- 3. Media (Anh hoac Video tran vien) -->
+    <div th:if="${post.mediaPath != null and !#strings.isEmpty(post.mediaPath)}" class="fb-post-media-full">
+      <img th:if="${post.mediaType.name() == 'IMAGE'}" th:src="${post.mediaPath}" alt="Ảnh bài viết" loading="lazy" />
+      <video th:if="${post.mediaType.name() == 'VIDEO'}" controls preload="metadata">
+        <source th:src="${post.mediaPath}" />
+        Trình duyệt không hỗ trợ xem video.
+      </video>
+    </div>
+
+    <!-- 4. Dong thong ke so like & so comment -->
+    <div class="fb-post-stats-row">
+      <div class="fb-stat-likes">
+        <span class="fb-like-badge-circle">
+          <th:block th:replace="~{fragments/icon :: icon('like-fill', 11)}" />
+        </span>
+        <span th:id="'like-count-' + ${post.id}" th:text="${post.likeCount}">0</span>
+      </div>
+      <div>
+        <span th:id="'comment-count-' + ${post.id}" th:text="${post.commentCount}">0</span> bình luận
+      </div>
+    </div>
+
+    <!-- 5. Nut Thich / Binh luan / Chia se (Uiverse Button Styles) -->
+    <div class="fb-post-actions-bar">
+      <!-- Nut Thich (Uiverse Animated Micro-interaction) -->
+      <button type="button"
+              class="uiverse-btn-like fb-btn-like"
+              th:classappend="${post.likedByCurrentUser} ? 'liked' : ''"
+              th:data-post-id="${post.id}">
+        <th:block th:replace="~{fragments/icon :: icon((${post.likedByCurrentUser} ? 'like-fill' : 'like'), 20)}" />
+        <span class="fb-like-label" th:text="${post.likedByCurrentUser} ? 'Đã thích' : 'Thích'">Thích</span>
+      </button>
+
+      <!-- Nut Binh luan (Uiverse Bounce) -->
+      <button type="button"
+              class="uiverse-btn-comment"
+              th:onclick="'document.getElementById(\'comment-input-' + ${post.id} + '\').focus();'">
+        <th:block th:replace="~{fragments/icon :: icon('comment', 20)}" />
+        <span>Bình luận</span>
+      </button>
+
+      <!-- Nut Chia se -->
+      <button type="button"
+              class="uiverse-btn-share"
+              onclick="if (navigator.share) { navigator.share({title: 'SpringBook', url: window.location.href}); } else { alert('Đã sao chép liên kết bài viết!'); }">
+        <th:block th:replace="~{fragments/icon :: icon('share', 20)}" />
+        <span>Chia sẻ</span>
+      </button>
+    </div>
+
+    <!-- 6. Khu vuc Binh luan (Bong bong va O nhap vien thuoc) -->
+    <div class="fb-comments-wrap">
+      <!-- Danh sach binh luan -->
+      <div th:id="'comments-list-' + ${post.id}">
+        <th:block th:each="comment : ${post.comments}">
+          <div th:replace="~{fragments/comment :: commentItem(${comment})}" />
+        </th:block>
+      </div>
+
+      <!-- O nhap binh luan moi -->
+      <form class="fb-inline-comment-composer fb-comment-form" th:data-post-id="${post.id}">
+        <th:block th:replace="~{fragments/avatar :: avatar(${currentUser}, 'fb-avatar-sm')}" />
+        <input type="text"
+               th:id="'comment-input-' + ${post.id}"
+               class="fb-inline-comment-input fb-comment-input"
+               placeholder="Viết bình luận..."
+               maxlength="1000"
+               required />
+      </form>
+    </div>
+
+  </div>
+
+</body>
+</html>

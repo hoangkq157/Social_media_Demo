@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main(${profile.user.fullName}, ~{::section}, (${profile.isOwnProfile} ? 'profile' : ''))}">
+<body>
+<section>
+  <div class="fb-profile-container">
+
+    <!-- ================= PROFILE HEADER (Anh bia + Avatar + Ten + Tab) ================= -->
+    <div class="fb-profile-header-card">
+      <!-- Anh bia (Cover photo) -->
+      <div class="fb-cover-photo"
+           th:style="${profile.user.coverPath != null and !#strings.isEmpty(profile.user.coverPath)} ? 'background-image: url(' + ${profile.user.coverPath} + ');' : ''">
+      </div>
+
+      <!-- Hang Avatar de len anh bia & Thong tin co ban -->
+      <div class="fb-profile-info-bar">
+        <div class="fb-profile-info-left">
+          <!-- Avatar lon 168px -->
+          <th:block th:replace="~{fragments/avatar :: avatar(${profile.user}, 'fb-avatar-profile')}" />
+
+          <!-- Ten & Bio -->
+          <div class="fb-profile-text-meta">
+            <h1 class="fb-profile-display-name" th:text="${profile.user.fullName}">Nguyễn Nhật Khánh</h1>
+            <div class="fb-profile-sub-meta" th:text="'@' + ${profile.user.username}">@khanh</div>
+            <p th:if="${profile.user.bio != null and !#strings.isEmpty(profile.user.bio)}" class="mb-0 mt-2 text-dark" style="font-size: 15px;" th:text="${profile.user.bio}">
+              Tiểu sử người dùng...
+            </p>
+          </div>
+        </div>
+
+        <!-- Nut chinh sua (neu la trang cua chinh minh) -->
+        <div th:if="${profile.isOwnProfile}" class="pb-2">
+          <a th:href="@{/settings/profile}" class="uiverse-btn-dismiss gap-2">
+            <th:block th:replace="~{fragments/icon :: icon('edit', 16)}" />
+            <span>Chỉnh sửa trang cá nhân</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- THANH TAB LOC: Tat ca / Anh / Video -->
+      <div class="fb-profile-tabs-row">
+        <a th:href="@{'/users/' + ${profile.user.username}(tab='all')}"
+           class="fb-profile-tab-btn"
+           th:classappend="${activeTab == 'all'} ? 'active' : ''">
+          <span>Bài viết</span>
+          <span class="badge bg-secondary rounded-pill ms-1" th:text="${profile.totalPosts}">0</span>
+        </a>
+        <a th:href="@{'/users/' + ${profile.user.username}(tab='photos')}"
+           class="fb-profile-tab-btn"
+           th:classappend="${activeTab == 'photos'} ? 'active' : ''">
+          <span>Ảnh</span>
+          <span class="badge bg-secondary rounded-pill ms-1" th:text="${profile.photoCount}">0</span>
+        </a>
+        <a th:href="@{'/users/' + ${profile.user.username}(tab='videos')}"
+           class="fb-profile-tab-btn"
+           th:classappend="${activeTab == 'videos'} ? 'active' : ''">
+          <span>Video</span>
+          <span class="badge bg-secondary rounded-pill ms-1" th:text="${profile.videoCount}">0</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ================= PROFILE BODY (2 cot: Gioi thieu & Noi dung tab) ================= -->
+    <div class="row g-3">
+      <!-- Cot trai: Gioi thieu -->
+      <div class="col-lg-5">
+        <div class="fb-card p-3 mb-3">
+          <h2 class="fw-bold fs-5 mb-3">Giới thiệu</h2>
+          <ul class="list-unstyled mb-0 d-flex flex-column gap-3 text-secondary">
+            <li class="d-flex align-items-center gap-2">
+              <th:block th:replace="~{fragments/icon :: icon('calendar', 20)}" />
+              <span>Tham gia vào tháng <strong class="text-dark" th:text="${profile.user.createdAtFormatted}">10/2026</strong></span>
+            </li>
+            <li class="d-flex align-items-center gap-2" th:if="${profile.isOwnProfile}">
+              <th:block th:replace="~{fragments/icon :: icon('mail', 20)}" />
+              <span>Email: <strong class="text-dark" th:text="${currentUser.email}">user@social.vn</strong></span>
+            </li>
+            <li class="d-flex align-items-center gap-2">
+              <th:block th:replace="~{fragments/icon :: icon('edit', 20)}" />
+              <span>Tổng số bài viết: <strong class="text-dark" th:text="${profile.totalPosts}">0</strong></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Cot phai: Danh sach bai viet hoac Luoi anh / video -->
+      <div class="col-lg-7">
+
+        <!-- TAB 1: TAT CA BAI VIET -->
+        <div th:if="${activeTab == 'all'}">
+          <th:block th:if="${profile.posts != null and !profile.posts.empty}">
+            <th:block th:each="post : ${profile.posts.content}">
+              <div th:replace="~{fragments/post-card :: postCard(${post})}" />
+            </th:block>
+          </th:block>
+
+          <div th:if="${profile.posts == null or profile.posts.empty}" class="fb-empty-state-card">
+            <th:block th:replace="~{fragments/icon :: icon('edit', 44)}" />
+            <div class="fb-empty-state-title">Chưa có bài viết nào</div>
+            <p class="mb-0 text-muted">Người dùng này chưa chia sẻ bài viết nào.</p>
+          </div>
+        </div>
+
+        <!-- TAB 2: ANH (Dang luoi 3 cot vuong) -->
+        <div th:if="${activeTab == 'photos'}">
+          <div class="fb-card p-2" th:if="${profile.posts != null and !profile.posts.empty}">
+            <div class="fb-photo-grid-3">
+              <div th:each="post : ${profile.posts.content}" class="fb-photo-grid-item">
+                <a th:href="@{'/users/' + ${profile.user.username}}">
+                  <img th:src="${post.mediaPath}" alt="Ảnh" loading="lazy" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div th:if="${profile.posts == null or profile.posts.empty}" class="fb-empty-state-card">
+            <th:block th:replace="~{fragments/icon :: icon('image', 44)}" />
+            <div class="fb-empty-state-title">Chưa có ảnh nào</div>
+            <p class="mb-0 text-muted">Người dùng này chưa tải lên hình ảnh nào.</p>
+          </div>
+        </div>
+
+        <!-- TAB 3: VIDEO (Dang luoi 3 cot kem nut Play) -->
+        <div th:if="${activeTab == 'videos'}">
+          <div class="fb-card p-2" th:if="${profile.posts != null and !profile.posts.empty}">
+            <div class="fb-photo-grid-3">
+              <div th:each="post : ${profile.posts.content}" class="fb-photo-grid-item position-relative">
+                <video th:src="${post.mediaPath}" style="width: 100%; height: 100%; object-fit: cover;"></video>
+                <div class="position-absolute top-50 start-50 translate-middle text-white p-2 rounded-circle" style="background: rgba(0,0,0,0.6);">
+                  <th:block th:replace="~{fragments/icon :: icon('play-fill', 24)}" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div th:if="${profile.posts == null or profile.posts.empty}" class="fb-empty-state-card">
+            <th:block th:replace="~{fragments/icon :: icon('video', 44)}" />
+            <div class="fb-empty-state-title">Chưa có video nào</div>
+            <p class="mb-0 text-muted">Người dùng này chưa đăng tải video nào.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</section>
+</body>
+</html>

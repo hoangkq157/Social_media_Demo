@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký tài khoản | SpringBook</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="d-flex align-items-center justify-content-center py-5" style="background-color: #f0f2f5; min-height: 100vh;">
+
+  <div class="container" style="max-width: 440px;">
+    <!-- Logo -->
+    <div class="text-center mb-3">
+      <a th:href="@{/login}" class="d-inline-flex align-items-center gap-2 text-decoration-none">
+        <div class="fb-brand-circle" style="width: 44px; height: 44px; font-size: 28px;">
+          S
+        </div>
+        <span style="font-size: 2.2rem; font-weight: 800; color: #0866FF;">SpringBook</span>
+      </a>
+    </div>
+
+    <div class="fb-card p-4 shadow-lg" style="border-radius: 8px;">
+      <h2 class="text-center fw-bold fs-4 mb-1">Tạo tài khoản mới</h2>
+      <p class="text-center text-muted small mb-4">Nhanh chóng và dễ dàng</p>
+
+      <div th:if="${errorMessage}" class="alert alert-danger py-2 px-3 small" role="alert" th:text="${errorMessage}">
+        Đã có lỗi xảy ra.
+      </div>
+
+      <!-- Form dang ky kem Bean Validation -->
+      <form th:action="@{/register}" th:object="${form}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <!-- Username -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Tên đăng nhập</label>
+          <input type="text"
+                 th:field="*{username}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
+                 placeholder="ví dụ: nhatkhanh"
+                 required />
+          <div class="invalid-feedback" th:errors="*{username}">Lỗi username</div>
+        </div>
+
+        <!-- Full Name -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Họ và tên</label>
+          <input type="text"
+                 th:field="*{fullName}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                 placeholder="Nguyễn Nhật Khánh"
+                 required />
+          <div class="invalid-feedback" th:errors="*{fullName}">Lỗi họ tên</div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Địa chỉ Email</label>
+          <input type="email"
+                 th:field="*{email}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                 placeholder="khanh@social.vn"
+                 required />
+          <div class="invalid-feedback" th:errors="*{email}">Lỗi email</div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Mật khẩu</label>
+          <input type="password"
+                 th:field="*{password}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
+                 placeholder="Tối thiểu 6 ký tự"
+                 required />
+          <div class="invalid-feedback" th:errors="*{password}">Lỗi mật khẩu</div>
+        </div>
+
+        <!-- Uiverse Success Register Button -->
+        <button type="submit" class="uiverse-btn-success w-100 mb-3">
+          Đăng ký
+        </button>
+
+        <div class="text-center">
+          <a th:href="@{/login}" class="text-decoration-none small fw-bold" style="color: #0866FF;">
+            Bạn đã có tài khoản? Đăng nhập ngay
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+</html>

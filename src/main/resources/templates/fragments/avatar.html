@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- Fragment avatar dung lai o moi noi (navbar, post card, comment, profile) -->
+  <th:block th:fragment="avatar(user, sizeClass)">
+    <img th:if="${user != null and user.avatarPath != null and !#strings.isEmpty(user.avatarPath)}"
+         th:src="${user.avatarPath}"
+         th:class="'fb-avatar ' + ${sizeClass != null ? sizeClass : 'fb-avatar-sm'}"
+         th:alt="${user.fullName != null ? user.fullName : user.username}" />
+    <div th:unless="${user != null and user.avatarPath != null and !#strings.isEmpty(user.avatarPath)}"
+         th:class="'fb-avatar ' + ${sizeClass != null ? sizeClass : 'fb-avatar-sm'}"
+         th:style="'background-color: ' + (${user != null and user.avatarColor != null} ? ${user.avatarColor} : '#1877F2')"
+         th:text="${user != null and user.initials != null ? user.initials : '?'}">?</div>
+  </th:block>
+
+  <!-- Fragment avatar cho author trong PostView / CommentView -->
+  <th:block th:fragment="authorAvatar(avatarPath, avatarColor, initials, fullName, sizeClass)">
+    <img th:if="${avatarPath != null and !#strings.isEmpty(avatarPath)}"
+         th:src="${avatarPath}"
+         th:class="'fb-avatar ' + ${sizeClass != null ? sizeClass : 'fb-avatar-sm'}"
+         th:alt="${fullName}" />
+    <div th:unless="${avatarPath != null and !#strings.isEmpty(avatarPath)}"
+         th:class="'fb-avatar ' + ${sizeClass != null ? sizeClass : 'fb-avatar-sm'}"
+         th:style="'background-color: ' + (${avatarColor != null} ? ${avatarColor} : '#1877F2')"
+         th:text="${initials != null ? initials : '?'}">?</div>
+  </th:block>
+</body>
+</html>

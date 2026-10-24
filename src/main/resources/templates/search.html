@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main('Tìm kiếm: ' + ${query}, ~{::section}, 'search')}">
+<body>
+<section>
+  <div class="container py-3" style="max-width: 780px;">
+
+    <!-- Khung tieu de tim kiem va chuyen Tab -->
+    <div class="fb-card p-3 mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h1 class="fw-bold fs-5 mb-1">Kết quả tìm kiếm cho: "<span th:text="${query}">từ khóa</span>"</h1>
+          <div class="small text-muted">Tìm kiếm người dùng và bài viết trên SpringBook</div>
+        </div>
+      </div>
+
+      <!-- O tim kiem trong trang -->
+      <form th:action="@{/search}" method="get" class="mb-3">
+        <input type="hidden" name="type" th:value="${type}" />
+        <div class="d-flex gap-2">
+          <input type="text"
+                 name="q"
+                 th:value="${query}"
+                 class="form-control fb-inline-comment-input"
+                 placeholder="Nhập tên người dùng hoặc nội dung bài viết..."
+                 required />
+          <button class="uiverse-btn-primary px-4 py-2" type="submit">
+            Tìm kiếm
+          </button>
+        </div>
+      </form>
+
+      <!-- Tabs chuyen doi giua Nguoi dung va Bai viet -->
+      <div class="d-flex gap-2 border-top pt-3">
+        <a class="uiverse-btn-dismiss"
+           th:classappend="${type == 'users'} ? 'uiverse-btn-confirm' : ''"
+           th:href="@{/search(q=${query}, type='users')}">
+          <th:block th:replace="~{fragments/icon :: icon('users', 18)}" />
+          <span>Mọi người</span>
+        </a>
+        <a class="uiverse-btn-dismiss"
+           th:classappend="${type == 'posts'} ? 'uiverse-btn-confirm' : ''"
+           th:href="@{/search(q=${query}, type='posts')}">
+          <th:block th:replace="~{fragments/icon :: icon('edit', 18)}" />
+          <span>Bài viết</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- KET QUA 1: DANH SACH NGUOI DUNG -->
+    <div th:if="${type == 'users'}">
+      <div th:if="${users != null and !users.empty}" class="d-flex flex-column gap-2">
+        <div th:each="user : ${users}" class="fb-card p-3 mb-2">
+          <div class="d-flex align-items-center justify-content-between">
+            <a th:href="@{'/users/' + ${user.username}}" class="d-flex align-items-center gap-3 text-decoration-none text-dark overflow-hidden">
+              <th:block th:replace="~{fragments/avatar :: avatar(${user}, 'fb-avatar-lg')}" />
+              <div>
+                <div class="fw-bold fs-6" th:text="${user.fullName}">Tên người dùng</div>
+                <div class="small text-muted" th:text="'@' + ${user.username}">@username</div>
+                <div th:if="${user.bio != null and !#strings.isEmpty(user.bio)}" class="small text-secondary mt-1 text-truncate" style="max-width: 400px;" th:text="${user.bio}">
+                  Tiểu sử...
+                </div>
+              </div>
+            </a>
+            <a th:href="@{'/users/' + ${user.username}}" class="uiverse-btn-confirm">
+              Xem trang cá nhân
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${users == null or users.empty}" class="fb-empty-state-card">
+        <th:block th:replace="~{fragments/icon :: icon('users', 44)}" />
+        <div class="fb-empty-state-title">Không tìm thấy người dùng phù hợp</div>
+        <p class="mb-0 text-muted">Hãy thử tìm kiếm bằng một tên khác hoặc kiểm tra lại chính tả nhé.</p>
+      </div>
+    </div>
+
+    <!-- KET QUA 2: DANH SACH BAI VIET -->
+    <div th:if="${type == 'posts'}">
+      <div th:if="${posts != null and !posts.empty}">
+        <th:block th:each="post : ${posts.content}">
+          <div th:replace="~{fragments/post-card :: postCard(${post})}" />
+        </th:block>
+      </div>
+
+      <div th:if="${posts == null or posts.empty}" class="fb-empty-state-card">
+        <th:block th:replace="~{fragments/icon :: icon('search', 44)}" />
+        <div class="fb-empty-state-title">Không tìm thấy bài viết nào</div>
+        <p class="mb-0 text-muted">Không có bài viết nào khớp với từ khóa tìm kiếm của bạn.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+</body>
+</html>

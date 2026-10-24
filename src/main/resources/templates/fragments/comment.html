@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+  <!-- Fragment hien thi 1 binh luan trong danh sach -->
+  <div th:fragment="commentItem(comment)" class="fb-comment-row">
+    <th:block th:replace="~{fragments/avatar :: authorAvatar(${comment.authorAvatarPath}, ${comment.authorAvatarColor}, ${comment.authorInitials}, ${comment.authorFullName}, 'fb-avatar-sm')}" />
+    <div style="flex: 1;">
+      <div class="fb-comment-bubble-v2">
+        <a th:href="@{'/users/' + ${comment.authorUsername}}" class="fb-comment-author-v2" th:text="${comment.authorFullName}">Tên người dùng</a>
+        <div class="fb-comment-content-v2" th:text="${comment.content}">Nội dung bình luận</div>
+      </div>
+      <div class="fb-comment-time-v2" th:text="${comment.createdAtFormatted}">10:30 15/10/2026</div>
+    </div>
+  </div>
+</body>
+</html>

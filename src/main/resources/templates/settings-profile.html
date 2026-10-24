@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main('Cài đặt thông tin', ~{::section}, 'settings')}">
+<body>
+<section>
+  <div class="container py-3" style="max-width: 720px;">
+
+    <!-- ================= FORM 1: THONG TIN CA NHAN, AVATAR, ANH BIA ================= -->
+    <div class="fb-card p-4 mb-4">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <th:block th:replace="~{fragments/icon :: icon('user', 24)}" />
+        <h1 class="fw-bold fs-5 mb-0">Chỉnh sửa thông tin cá nhân</h1>
+      </div>
+      <p class="text-muted small mb-4">Cập nhật hồ sơ công khai, ảnh đại diện và ảnh bìa của bạn</p>
+
+      <form th:action="@{/settings/profile}" th:object="${profileForm}" method="post" enctype="multipart/form-data">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <!-- Hang xem va doi Avatar / Anh bia -->
+        <div class="row g-3 mb-4 p-3 bg-light rounded-3">
+          <!-- Doi Avatar -->
+          <div class="col-sm-6 text-center">
+            <div class="mb-2">
+              <th:block th:replace="~{fragments/avatar :: avatar(${currentUser}, 'fb-avatar-lg')}" />
+            </div>
+            <label class="form-label small fw-bold d-block">Đổi ảnh đại diện</label>
+            <input type="file"
+                   name="avatarFile"
+                   class="form-control form-control-sm"
+                   accept="image/jpeg,image/png,image/gif,image/webp" />
+            <div class="text-muted" style="font-size: 0.75rem;">JPG, PNG, GIF, WEBP (Tối đa 5MB)</div>
+          </div>
+
+          <!-- Doi Anh bia -->
+          <div class="col-sm-6 text-center">
+            <div class="mb-2 rounded"
+                 style="height: 64px; background: linear-gradient(135deg, #4facfe, #0866FF); background-size: cover; background-position: center;"
+                 th:style="${currentUser.coverPath != null and !#strings.isEmpty(currentUser.coverPath)} ? 'background-image: url(' + ${currentUser.coverPath} + '); height: 64px; background-size: cover;' : 'height: 64px; background: linear-gradient(135deg, #4facfe, #0866FF);'">
+            </div>
+            <label class="form-label small fw-bold d-block">Đổi ảnh bìa</label>
+            <input type="file"
+                   name="coverFile"
+                   class="form-control form-control-sm"
+                   accept="image/jpeg,image/png,image/gif,image/webp" />
+            <div class="text-muted" style="font-size: 0.75rem;">JPG, PNG, GIF, WEBP (Tối đa 5MB)</div>
+          </div>
+        </div>
+
+        <!-- Ho va ten -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Họ và tên</label>
+          <input type="text"
+                 th:field="*{fullName}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
+                 required />
+          <div class="invalid-feedback" th:errors="*{fullName}">Lỗi họ tên</div>
+        </div>
+
+        <!-- Tieu su (Bio) -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Tiểu sử (Bio)</label>
+          <textarea th:field="*{bio}"
+                    class="form-control rounded-3"
+                    rows="2"
+                    th:classappend="${#fields.hasErrors('bio')} ? 'is-invalid' : ''"
+                    placeholder="Viết một đoạn ngắn giới thiệu bản thân..."></textarea>
+          <div class="invalid-feedback" th:errors="*{bio}">Lỗi bio</div>
+        </div>
+
+        <!-- Email -->
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Địa chỉ Email</label>
+          <input type="email"
+                 th:field="*{email}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
+                 required />
+          <div class="invalid-feedback" th:errors="*{email}">Lỗi email</div>
+        </div>
+
+        <button type="submit" class="uiverse-btn-primary px-4">
+          Lưu thông tin cá nhân
+        </button>
+      </form>
+    </div>
+
+    <!-- ================= FORM 2: DOI MAT KHAU ================= -->
+    <div class="fb-card p-4">
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <th:block th:replace="~{fragments/icon :: icon('settings', 24)}" />
+        <h2 class="fw-bold fs-5 mb-0">Đổi mật khẩu</h2>
+      </div>
+      <p class="text-muted small mb-4">Để bảo mật, vui lòng nhập mật khẩu hiện tại trước khi tạo mật khẩu mới</p>
+
+      <div th:if="${passwordSuccessMessage}" class="alert alert-success py-2 px-3 small" role="alert" th:text="${passwordSuccessMessage}">
+        Đổi mật khẩu thành công!
+      </div>
+      <div th:if="${passwordErrorMessage}" class="alert alert-danger py-2 px-3 small" role="alert" th:text="${passwordErrorMessage}">
+        Lỗi đổi mật khẩu.
+      </div>
+
+      <form th:action="@{/settings/password}" th:object="${passwordForm}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+        <!-- Mat khau hien tai -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Mật khẩu hiện tại</label>
+          <input type="password"
+                 th:field="*{currentPassword}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('currentPassword')} ? 'is-invalid' : ''"
+                 required />
+          <div class="invalid-feedback" th:errors="*{currentPassword}">Lỗi mật khẩu hiện tại</div>
+        </div>
+
+        <!-- Mat khau moi -->
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Mật khẩu mới</label>
+          <input type="password"
+                 th:field="*{newPassword}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('newPassword')} ? 'is-invalid' : ''"
+                 placeholder="Tối thiểu 6 ký tự"
+                 required />
+          <div class="invalid-feedback" th:errors="*{newPassword}">Lỗi mật khẩu mới</div>
+        </div>
+
+        <!-- Xac nhan mat khau moi -->
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Xác nhận mật khẩu mới</label>
+          <input type="password"
+                 th:field="*{confirmPassword}"
+                 class="form-control rounded-3"
+                 th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                 placeholder="Nhập lại mật khẩu mới"
+                 required />
+          <div class="invalid-feedback" th:errors="*{confirmPassword}">Lỗi xác nhận mật khẩu</div>
+        </div>
+
+        <button type="submit" class="uiverse-btn-primary px-4">
+          Cập nhật mật khẩu
+        </button>
+      </form>
+    </div>
+
+  </div>
+</section>
+</body>
+</html>

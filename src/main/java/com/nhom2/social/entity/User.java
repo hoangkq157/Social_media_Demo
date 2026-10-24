@@ -5,10 +5,14 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
 
+/**
+ * Entity dai dien cho nguoi dung trong he thong.
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -22,7 +26,7 @@ public class User {
     @Column(nullable = false, unique = true, length = 50)
     private String username;
 
-    @Column(length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String email;
 
     @Column(nullable = false, length = 100)
@@ -31,8 +35,24 @@ public class User {
     @Column(name = "full_name", length = 100)
     private String fullName;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(length = 255)
+    private String bio;
+
+    @Column(name = "avatar_path", length = 255)
+    private String avatarPath;
+
+    @Column(name = "cover_path", length = 255)
+    private String coverPath;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 
     public User() {
     }
@@ -44,12 +64,14 @@ public class User {
         this.fullName = fullName;
     }
 
-    /** Chu cai dau lam anh dai dien (FB-style avatar chu). */
+    /**
+     * Chu cai dau lam anh dai dien mac dinh (Facebook initials avatar).
+     */
     public String getInitials() {
         if (fullName == null || fullName.isBlank()) {
             return username == null || username.isBlank() ? "?" : username.substring(0, 1).toUpperCase();
         }
-        String[] parts = fullName.trim().split("\s+");
+        String[] parts = fullName.trim().split("\\s+");
         String ini = parts[0].substring(0, 1);
         if (parts.length > 1) {
             ini += parts[parts.length - 1].substring(0, 1);
@@ -57,7 +79,9 @@ public class User {
         return ini.toUpperCase();
     }
 
-    /** Ma on dinh theo username de chon mau avatar. */
+    /**
+     * Ma mau on dinh dua theo hash cua username.
+     */
     public String getAvatarColor() {
         int h = username == null ? 0 : Math.abs(username.hashCode());
         return "#" + AVATAR_COLORS[h % AVATAR_COLORS.length];
@@ -73,6 +97,12 @@ public class User {
     public void setPassword(String password) { this.password = password; }
     public String getFullName() { return fullName; }
     public void setFullName(String fullName) { this.fullName = fullName; }
+    public String getBio() { return bio; }
+    public void setBio(String bio) { this.bio = bio; }
+    public String getAvatarPath() { return avatarPath; }
+    public void setAvatarPath(String avatarPath) { this.avatarPath = avatarPath; }
+    public String getCoverPath() { return coverPath; }
+    public void setCoverPath(String coverPath) { this.coverPath = coverPath; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
