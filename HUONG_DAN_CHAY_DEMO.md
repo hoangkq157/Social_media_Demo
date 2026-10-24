@@ -6,7 +6,8 @@ Chờ tới khi log hiện dòng `Tomcat started on port 8080` (lần đầu ~1 
 
 - **Ứng dụng:** http://localhost:8080
 - **Xem CSDL:** http://localhost:8080/h2-console
-- **Tài khoản mẫu:** `an` / `binh` / `chi` — mật khẩu `123456`
+- **Tài khoản mẫu:** `an` / `binh` / `chi` / `dung` / `hoa` — mật khẩu `123456`
+- **Tính năng Bạn bè:** Đăng nhập `an` để thấy lời mời kết bạn từ `dung` và `hoa`, truy cập `/friends` để quản lý bạn bè (Xác nhận, Xóa, Gợi ý bạn bè).
 
 ## Cách bật (cách 2 — bằng lệnh)
 Mở terminal (CMD/PowerShell/Git Bash) trong thư mục dự án:

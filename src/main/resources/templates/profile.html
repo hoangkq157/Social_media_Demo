@@ -20,19 +20,69 @@
           <!-- Ten & Bio -->
           <div class="fb-profile-text-meta">
             <h1 class="fb-profile-display-name" th:text="${profile.user.fullName}">Nguyễn Nhật Khánh</h1>
-            <div class="fb-profile-sub-meta" th:text="'@' + ${profile.user.username}">@khanh</div>
+            <div class="fb-profile-sub-meta">
+              <span th:text="'@' + ${profile.user.username}">@khanh</span>
+              <span>&bull;</span>
+              <span><strong th:text="${profile.friendCount}" id="profileFriendCount">0</strong> bạn bè</span>
+            </div>
             <p th:if="${profile.user.bio != null and !#strings.isEmpty(profile.user.bio)}" class="mb-0 mt-2 text-dark" style="font-size: 15px;" th:text="${profile.user.bio}">
               Tiểu sử người dùng...
             </p>
           </div>
         </div>
 
-        <!-- Nut chinh sua (neu la trang cua chinh minh) -->
-        <div th:if="${profile.isOwnProfile}" class="pb-2">
-          <a th:href="@{/settings/profile}" class="uiverse-btn-dismiss gap-2">
+        <!-- Nut chinh sua hoac Nut Ket ban -->
+        <div class="pb-2" id="profileFriendActions">
+          <!-- Neu la trang cua chinh minh -->
+          <a th:if="${profile.isOwnProfile}" th:href="@{/settings/profile}" class="uiverse-btn-dismiss gap-2">
             <th:block th:replace="~{fragments/icon :: icon('edit', 16)}" />
             <span>Chỉnh sửa trang cá nhân</span>
           </a>
+
+          <!-- Neu la trang cua nguoi khac -->
+          <div th:unless="${profile.isOwnProfile}" class="d-flex gap-2">
+            <!-- 1. Chua ket ban: Nut Them ban be -->
+            <button th:if="${profile.friendRelation.name() == 'NONE'}"
+                    type="button"
+                    class="uiverse-btn-confirm btn-friend-request"
+                    th:data-username="${profile.user.username}">
+              <th:block th:replace="~{fragments/icon :: icon('plus', 16)}" />
+              <span>Thêm bạn bè</span>
+            </button>
+
+            <!-- 2. Da gui loi moi: Nut Huy loi moi -->
+            <button th:if="${profile.friendRelation.name() == 'PENDING_SENT'}"
+                    type="button"
+                    class="uiverse-btn-dismiss btn-friend-cancel"
+                    th:data-username="${profile.user.username}">
+              <th:block th:replace="~{fragments/icon :: icon('x', 16)}" />
+              <span>Hủy lời mời</span>
+            </button>
+
+            <!-- 3. Nhan duoc loi moi: 2 nut Xac nhan & Xoa -->
+            <th:block th:if="${profile.friendRelation.name() == 'PENDING_RECEIVED'}">
+              <button type="button"
+                      class="uiverse-btn-confirm btn-friend-accept"
+                      th:data-username="${profile.user.username}">
+                Xác nhận
+              </button>
+              <button type="button"
+                      class="uiverse-btn-dismiss btn-friend-reject"
+                      th:data-username="${profile.user.username}">
+                Xóa lời mời
+              </button>
+            </th:block>
+
+            <!-- 4. Da la ban be: Nut Ban be (Kem tuy chon Huy ket ban) -->
+            <button th:if="${profile.friendRelation.name() == 'FRIENDS'}"
+                    type="button"
+                    class="uiverse-btn-dismiss btn-friend-unfriend"
+                    th:data-username="${profile.user.username}"
+                    title="Bấm để hủy kết bạn">
+              <th:block th:replace="~{fragments/icon :: icon('check', 16)}" />
+              <span>Bạn bè (Hủy kết bạn)</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -73,6 +123,10 @@
             <li class="d-flex align-items-center gap-2" th:if="${profile.isOwnProfile}">
               <th:block th:replace="~{fragments/icon :: icon('mail', 20)}" />
               <span>Email: <strong class="text-dark" th:text="${currentUser.email}">user@social.vn</strong></span>
+            </li>
+            <li class="d-flex align-items-center gap-2">
+              <th:block th:replace="~{fragments/icon :: icon('users', 20)}" />
+              <span>Bạn bè: <strong class="text-dark" th:text="${profile.friendCount}">0</strong> người bạn</span>
             </li>
             <li class="d-flex align-items-center gap-2">
               <th:block th:replace="~{fragments/icon :: icon('edit', 20)}" />

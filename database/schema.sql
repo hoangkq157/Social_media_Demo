@@ -49,3 +49,17 @@ CREATE TABLE post_likes (
     FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT uk_post_user_like UNIQUE (post_id, user_id)
 );
+
+CREATE TABLE friendships (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sender_id   BIGINT NOT NULL,
+    receiver_id BIGINT NOT NULL,
+    status      VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at  DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE,
+    CONSTRAINT uk_friendship_sender_receiver UNIQUE (sender_id, receiver_id),
+    INDEX idx_friendship_receiver_status (receiver_id, status),
+    INDEX idx_friendship_sender_status (sender_id, status)
+);

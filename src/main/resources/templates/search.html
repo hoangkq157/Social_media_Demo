@@ -61,9 +61,51 @@
                 </div>
               </div>
             </a>
-            <a th:href="@{'/users/' + ${user.username}}" class="uiverse-btn-confirm">
-              Xem trang cá nhân
-            </a>
+            <div class="d-flex align-items-center gap-2">
+              <!-- Neu la ban than -->
+              <a th:if="${user.isCurrent}" th:href="@{'/users/' + ${user.username}}" class="uiverse-btn-dismiss">
+                Trang của bạn
+              </a>
+
+              <!-- Neu la nguoi khac -->
+              <th:block th:unless="${user.isCurrent}">
+                <button th:if="${relations != null and relations.get(user.username) != null and relations.get(user.username).name() == 'NONE'}"
+                        type="button"
+                        class="uiverse-btn-confirm btn-friend-request"
+                        th:data-username="${user.username}">
+                  <th:block th:replace="~{fragments/icon :: icon('plus', 16)}" />
+                  <span>Thêm bạn bè</span>
+                </button>
+
+                <button th:if="${relations != null and relations.get(user.username) != null and relations.get(user.username).name() == 'PENDING_SENT'}"
+                        type="button"
+                        class="uiverse-btn-dismiss btn-friend-cancel"
+                        th:data-username="${user.username}">
+                  <span>Hủy lời mời</span>
+                </button>
+
+                <th:block th:if="${relations != null and relations.get(user.username) != null and relations.get(user.username).name() == 'PENDING_RECEIVED'}">
+                  <button type="button" class="uiverse-btn-confirm btn-friend-accept" th:data-username="${user.username}">
+                    Xác nhận
+                  </button>
+                  <button type="button" class="uiverse-btn-dismiss btn-friend-reject" th:data-username="${user.username}">
+                    Xóa
+                  </button>
+                </th:block>
+
+                <button th:if="${relations != null and relations.get(user.username) != null and relations.get(user.username).name() == 'FRIENDS'}"
+                        type="button"
+                        class="uiverse-btn-dismiss btn-friend-unfriend"
+                        th:data-username="${user.username}">
+                  <th:block th:replace="~{fragments/icon :: icon('check', 16)}" />
+                  <span>Bạn bè</span>
+                </button>
+
+                <a th:href="@{'/users/' + ${user.username}}" class="uiverse-btn-dismiss">
+                  Xem trang
+                </a>
+              </th:block>
+            </div>
           </div>
         </div>
       </div>

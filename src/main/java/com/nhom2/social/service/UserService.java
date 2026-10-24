@@ -150,6 +150,7 @@ public class UserService implements UserDetailsService {
         return new UserCard(
                 user.getId(),
                 user.getUsername(),
+                user.getEmail(),
                 user.getFullName(),
                 user.getBio(),
                 user.getAvatarPath(),

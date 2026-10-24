@@ -12,5 +12,7 @@ public record ProfileView(
     long videoCount,
     Page<PostView> posts,
     String activeTab,
-    boolean isOwnProfile
+    boolean isOwnProfile,
+    long friendCount,
+    FriendRelation friendRelation
 ) {}

@@ -6,6 +6,7 @@ package com.nhom2.social.dto;
 public record UserCard(
     Long id,
     String username,
+    String email,
     String fullName,
     String bio,
     String avatarPath,

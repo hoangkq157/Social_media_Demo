@@ -25,10 +25,14 @@ public class SearchController {
 
     private final UserService userService;
     private final PostService postService;
+    private final com.nhom2.social.service.FriendshipService friendshipService;
 
-    public SearchController(UserService userService, PostService postService) {
+    public SearchController(UserService userService,
+                            PostService postService,
+                            com.nhom2.social.service.FriendshipService friendshipService) {
         this.userService = userService;
         this.postService = postService;
+        this.friendshipService = friendshipService;
     }
 
     @GetMapping("/search")
@@ -51,7 +55,12 @@ public class SearchController {
             model.addAttribute("posts", posts);
         } else {
             List<UserCard> users = userService.searchUsers(query, currentUsername);
+            java.util.Map<String, com.nhom2.social.dto.FriendRelation> relations = new java.util.HashMap<>();
+            for (UserCard u : users) {
+                relations.put(u.username(), friendshipService.getRelation(currentUsername, u.username()));
+            }
             model.addAttribute("users", users);
+            model.addAttribute("relations", relations);
         }
 
         return "search";

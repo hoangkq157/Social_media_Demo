@@ -38,6 +38,19 @@ public class GlobalExceptionHandler {
         return "error/404";
     }
 
+    @ExceptionHandler(org.springframework.web.servlet.resource.NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Object handleNoResourceFound(org.springframework.web.servlet.resource.NoResourceFoundException ex, HttpServletRequest request, Model model) {
+        log.debug("404 Resource Not Found tai {}: {}", request.getRequestURI(), ex.getMessage());
+        if (isApiRequest(request)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+        }
+        model.addAttribute("status", 404);
+        model.addAttribute("error", "Không tìm thấy tài nguyên");
+        model.addAttribute("message", ex.getMessage());
+        return "error/404";
+    }
+
     @ExceptionHandler({ForbiddenException.class, AccessDeniedException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Object handleForbidden(Exception ex, HttpServletRequest request, Model model) {

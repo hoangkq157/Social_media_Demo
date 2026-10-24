@@ -54,3 +54,11 @@ INSERT INTO post_likes (id, post_id, user_id, created_at) VALUES
 (10, 5, 2, '2026-10-16 20:15:00'),
 (11, 6, 1, '2026-10-17 11:15:00'),
 (12, 7, 2, '2026-10-17 16:45:00');
+
+-- Bang friendships (quan he ban be va loi moi ket ban)
+INSERT INTO friendships (id, sender_id, receiver_id, status, created_at, updated_at) VALUES
+(1, 1, 2, 'ACCEPTED', '2026-10-12 10:00:00', '2026-10-12 10:30:00'),
+(2, 1, 3, 'ACCEPTED', '2026-10-12 11:00:00', '2026-10-12 11:15:00'),
+(3, 2, 3, 'ACCEPTED', '2026-10-13 09:00:00', '2026-10-13 09:30:00'),
+(4, 4, 1, 'PENDING',  '2026-10-18 08:00:00', '2026-10-18 08:00:00'),
+(5, 5, 1, 'PENDING',  '2026-10-18 09:30:00', '2026-10-18 09:30:00');

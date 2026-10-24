@@ -1,8 +1,10 @@
 package com.nhom2.social.controller;
 
 import com.nhom2.social.config.AppProperties;
+import com.nhom2.social.dto.FriendRequestView;
 import com.nhom2.social.dto.PostView;
 import com.nhom2.social.dto.UserCard;
+import com.nhom2.social.service.FriendshipService;
 import com.nhom2.social.service.PostService;
 import com.nhom2.social.service.UserService;
 import org.springframework.data.domain.Page;
@@ -31,11 +33,16 @@ public class FeedController {
 
     private final PostService postService;
     private final UserService userService;
+    private final FriendshipService friendshipService;
     private final AppProperties appProperties;
 
-    public FeedController(PostService postService, UserService userService, AppProperties appProperties) {
+    public FeedController(PostService postService,
+                          UserService userService,
+                          FriendshipService friendshipService,
+                          AppProperties appProperties) {
         this.postService = postService;
         this.userService = userService;
+        this.friendshipService = friendshipService;
         this.appProperties = appProperties;
     }
 
@@ -47,10 +54,15 @@ public class FeedController {
         String currentUsername = principal != null ? principal.getUsername() : "an";
 
         UserCard currentUser = userService.getUserCard(currentUsername, currentUsername);
-        List<UserCard> suggestions = userService.getSuggestions(currentUsername);
+        List<FriendRequestView> friendRequests = friendshipService.getPendingRequestsReceived(currentUsername);
+        List<UserCard> suggestions = friendshipService.getSuggestedUsers(currentUsername);
+        if (suggestions.isEmpty()) {
+            suggestions = userService.getSuggestions(currentUsername);
+        }
         Page<PostView> posts = postService.getFeed(currentUsername, PageRequest.of(page, pageSize));
 
         model.addAttribute("currentUser", currentUser);
+        model.addAttribute("friendRequests", friendRequests);
         model.addAttribute("suggestions", suggestions);
         model.addAttribute("posts", posts);
         model.addAttribute("currentPage", page);

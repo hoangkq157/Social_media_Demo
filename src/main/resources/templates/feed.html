@@ -21,11 +21,14 @@
       </a>
 
       <!-- 3. Ban be -->
-      <a th:href="@{/search(type='users')}" class="fb-sidebar-row">
-        <div class="fb-sidebar-icon-box fb-icon-bg-blue">
-          <th:block th:replace="~{fragments/icon :: icon('users-fill', 20)}" />
+      <a th:href="@{/friends}" class="fb-sidebar-row justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <div class="fb-sidebar-icon-box fb-icon-bg-blue">
+            <th:block th:replace="~{fragments/icon :: icon('users-fill', 20)}" />
+          </div>
+          <span>Bạn bè</span>
         </div>
-        <span>Bạn bè</span>
+        <span th:if="${friendRequests != null and !friendRequests.empty}" class="badge bg-danger rounded-pill" th:text="${friendRequests.size()}">2</span>
       </a>
 
       <!-- 4. Bang dieu khien -->
@@ -188,36 +191,72 @@
         </a>
       </div>
 
-      <!-- Khối 2: LỜI MỜI KẾT BẠN / NGƯỜI BẠN CÓ THỂ BIẾT (Exact styling as in photo) -->
-      <div class="fb-widget-section" th:if="${suggestions != null and !suggestions.empty}">
+      <!-- Khối 2: LỜI MỜI KẾT BẠN (Dữ liệu thật từ CSDL) -->
+      <div class="fb-widget-section" th:if="${friendRequests != null and !friendRequests.empty}" id="feedFriendRequestsSection">
         <div class="fb-widget-header">
           <span class="fb-widget-title">Lời mời kết bạn</span>
-          <a th:href="@{/search(type='users')}" class="fb-widget-link">Xem tất cả</a>
+          <a th:href="@{/friends(tab='requests')}" class="fb-widget-link">Xem tất cả</a>
         </div>
 
         <div class="d-flex flex-column gap-3">
-          <div th:each="user, stat : ${suggestions}" th:if="${stat.index < 3}" class="d-flex gap-3 align-items-start p-1">
+          <div th:each="req : ${friendRequests}" class="d-flex gap-3 align-items-start p-1" th:id="'feed-request-item-' + ${req.user.username}">
+            <a th:href="@{'/users/' + ${req.user.username}}">
+              <th:block th:replace="~{fragments/avatar :: avatar(${req.user}, 'fb-avatar-lg')}" />
+            </a>
+            <div style="flex: 1;">
+              <div class="d-flex justify-content-between align-items-baseline">
+                <a th:href="@{'/users/' + ${req.user.username}}" class="fw-bold text-dark text-decoration-none" th:text="${req.user.fullName}">
+                  Diệp Tịch Thuỷ
+                </a>
+                <span class="text-muted" style="font-size: 11px;" th:text="${req.createdAtFormatted}">2 tuần</span>
+              </div>
+              <div class="text-muted mb-2" style="font-size: 13px;" th:text="${req.user.bio != null and !#strings.isEmpty(req.user.bio) ? req.user.bio : '@' + req.user.username}">
+                Có 2,1K người theo dõi
+              </div>
+
+              <!-- Hai nut: Xac nhan (Xanh) va Xoa (Xam) voi AJAX Uiverse -->
+              <div class="d-flex gap-2">
+                <button type="button" class="uiverse-btn-confirm flex-fill btn-friend-accept" th:data-username="${req.user.username}">
+                  Xác nhận
+                </button>
+                <button type="button" class="uiverse-btn-dismiss flex-fill btn-friend-reject" th:data-username="${req.user.username}">
+                  Xóa
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Khối 2 phụ: NGƯỜI BẠN CÓ THỂ BIẾT (Gợi ý kết bạn) -->
+      <div class="fb-widget-section" th:if="${(friendRequests == null or friendRequests.empty) and suggestions != null and !suggestions.empty}">
+        <div class="fb-widget-header">
+          <span class="fb-widget-title">Những người bạn có thể biết</span>
+          <a th:href="@{/friends(tab='suggestions')}" class="fb-widget-link">Xem tất cả</a>
+        </div>
+
+        <div class="d-flex flex-column gap-3">
+          <div th:each="user, stat : ${suggestions}" th:if="${stat.index < 3}" class="d-flex gap-3 align-items-start p-1" th:id="'feed-sugg-item-' + ${user.username}">
             <a th:href="@{'/users/' + ${user.username}}">
               <th:block th:replace="~{fragments/avatar :: avatar(${user}, 'fb-avatar-lg')}" />
             </a>
             <div style="flex: 1;">
               <div class="d-flex justify-content-between align-items-baseline">
                 <a th:href="@{'/users/' + ${user.username}}" class="fw-bold text-dark text-decoration-none" th:text="${user.fullName}">
-                  Diệp Tịch Thuỷ
+                  Tên người dùng
                 </a>
                 <span class="text-muted" style="font-size: 12px;">gợi ý</span>
               </div>
               <div class="text-muted mb-2" style="font-size: 13px;" th:text="${user.bio != null and !#strings.isEmpty(user.bio) ? user.bio : '@' + user.username}">
-                Có 2,1K người theo dõi
+                Bio...
               </div>
 
-              <!-- Hai nut: Xac nhan (Xanh) va Xoa (Xam) giong het anh -->
               <div class="d-flex gap-2">
-                <a th:href="@{'/users/' + ${user.username}}" class="uiverse-btn-confirm flex-fill">
-                  Xác nhận
-                </a>
+                <button type="button" class="uiverse-btn-confirm flex-fill btn-friend-request" th:data-username="${user.username}">
+                  Thêm bạn bè
+                </button>
                 <a th:href="@{'/users/' + ${user.username}}" class="uiverse-btn-dismiss flex-fill">
-                  Xóa
+                  Xem trang
                 </a>
               </div>
             </div>

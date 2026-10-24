@@ -5,6 +5,7 @@
 -- ============================================================
 
 -- Xoa du lieu cu neu chay lai de tranh trung khoa chinh khi chay test
+DELETE FROM friendships;
 DELETE FROM post_likes;
 DELETE FROM comments;
 DELETE FROM posts;
@@ -17,6 +18,14 @@ INSERT INTO users (id, username, email, password, full_name, bio, avatar_path, c
 (3, 'chi',  'chi@social.vn',  '$2a$10$fqhU8s.aV3.6NFp..MIjhOhlOMvY5TA5GQrJwEt9WKbCgjGgS3ld2', 'Lê Hoàng Chi',   'Backend Developer | Clean Architecture & JPA Optimizer.', NULL, NULL, '2026-10-10 08:10:00'),
 (4, 'dung', 'dung@social.vn', '$2a$10$fqhU8s.aV3.6NFp..MIjhOhlOMvY5TA5GQrJwEt9WKbCgjGgS3ld2', 'Phạm Tiến Dũng', 'Sinh viên IT chuyên ngành CNPM - Nhóm 2.', NULL, NULL, '2026-10-11 09:00:00'),
 (5, 'hoa',  'hoa@social.vn',  '$2a$10$fqhU8s.aV3.6NFp..MIjhOhlOMvY5TA5GQrJwEt9WKbCgjGgS3ld2', 'Vũ Quỳnh Hoa',   'Yêu thích kiểm thử tự động và bảo mật Spring Security.', NULL, NULL, '2026-10-11 09:30:00');
+
+-- Bang friendships (quan he ban be va loi moi ket ban)
+INSERT INTO friendships (id, sender_id, receiver_id, status, created_at, updated_at) VALUES
+(1, 1, 2, 'ACCEPTED', '2026-10-12 10:00:00', '2026-10-12 10:30:00'),
+(2, 1, 3, 'ACCEPTED', '2026-10-12 11:00:00', '2026-10-12 11:15:00'),
+(3, 2, 3, 'ACCEPTED', '2026-10-13 09:00:00', '2026-10-13 09:30:00'),
+(4, 4, 1, 'PENDING',  '2026-10-18 08:00:00', '2026-10-18 08:00:00'),
+(5, 5, 1, 'PENDING',  '2026-10-18 09:30:00', '2026-10-18 09:30:00');
 
 -- Bang posts (11 bai viet voi ca text va hinh anh minh hoa)
 INSERT INTO posts (id, user_id, content, media_path, media_type, created_at) VALUES
@@ -61,7 +70,8 @@ INSERT INTO post_likes (id, post_id, user_id, created_at) VALUES
 (12, 7, 2, '2026-10-17 16:45:00');
 
 -- Don bo dem tu tang (de app tao moi khong trung id)
-ALTER TABLE users      ALTER COLUMN id RESTART WITH 6;
-ALTER TABLE posts      ALTER COLUMN id RESTART WITH 12;
-ALTER TABLE comments   ALTER COLUMN id RESTART WITH 11;
-ALTER TABLE post_likes ALTER COLUMN id RESTART WITH 13;
+ALTER TABLE users       ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE friendships ALTER COLUMN id RESTART WITH 6;
+ALTER TABLE posts       ALTER COLUMN id RESTART WITH 12;
+ALTER TABLE comments    ALTER COLUMN id RESTART WITH 11;
+ALTER TABLE post_likes  ALTER COLUMN id RESTART WITH 13;

@@ -50,11 +50,11 @@
          title="Thước phim & Video">
         <th:block th:replace="~{fragments/icon :: icon('video', 26)}" />
       </a>
-      <a th:href="@{/search(type='users')}"
+      <a th:href="@{/friends}"
          class="fb-nav-tab-item"
-         th:classappend="${activeNav == 'search'} ? 'active' : ''"
-         title="Mọi người">
-        <th:block th:replace="~{fragments/icon :: icon('users', 26)}" />
+         th:classappend="${activeNav == 'friends'} ? 'active' : ''"
+         title="Bạn bè">
+        <th:block th:replace="~{fragments/icon :: icon((${activeNav == 'friends'} ? 'users-fill' : 'users'), 26)}" />
       </a>
       <a th:if="${currentUser != null}"
          th:href="@{'/users/' + ${currentUser.username}}"
@@ -118,6 +118,12 @@
             <a class="dropdown-item py-2 rounded d-flex align-items-center gap-3" th:href="@{'/users/' + ${currentUser.username}}">
               <th:block th:replace="~{fragments/icon :: icon('user', 18)}" />
               <span>Trang cá nhân</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item py-2 rounded d-flex align-items-center gap-3" th:href="@{/friends}">
+              <th:block th:replace="~{fragments/icon :: icon('users', 18)}" />
+              <span>Bạn bè</span>
             </a>
           </li>
           <li>

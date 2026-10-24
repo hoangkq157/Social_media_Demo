@@ -76,11 +76,67 @@ class ServiceTests {
         });
     }
 
+    @Autowired
+    private com.nhom2.social.service.FriendshipService friendshipService;
+
     @Test
     @DisplayName("Tạo bài viết: Báo lỗi khi cả nội dung và media đều rỗng")
     void testCreatePostEmptyContentAndMedia() {
         assertThrows(IllegalArgumentException.class, () -> {
             postService.createPost("an", "   ", null);
         });
+    }
+
+    @Test
+    @DisplayName("Kết bạn: Không thể tự kết bạn với chính mình")
+    void testCannotFriendSelf() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            friendshipService.sendRequest("an", "an");
+        });
+    }
+
+    @Test
+    @DisplayName("Kết bạn: Gửi lời mời kết bạn thành công")
+    void testSendFriendRequest() {
+        com.nhom2.social.dto.FriendRelation rel = friendshipService.sendRequest("dung", "chi");
+        assertThat(rel).isEqualTo(com.nhom2.social.dto.FriendRelation.PENDING_SENT);
+        assertThat(friendshipService.getRelation("dung", "chi")).isEqualTo(com.nhom2.social.dto.FriendRelation.PENDING_SENT);
+        assertThat(friendshipService.getRelation("chi", "dung")).isEqualTo(com.nhom2.social.dto.FriendRelation.PENDING_RECEIVED);
+    }
+
+    @Test
+    @DisplayName("Kết bạn: Chấp nhận lời mời kết bạn")
+    void testAcceptFriendRequest() {
+        // Trong seed data, dung da gui loi moi cho an
+        assertThat(friendshipService.getRelation("an", "dung")).isEqualTo(com.nhom2.social.dto.FriendRelation.PENDING_RECEIVED);
+        long initialFriends = friendshipService.countFriends("an");
+
+        friendshipService.acceptRequest("an", "dung");
+
+        assertThat(friendshipService.getRelation("an", "dung")).isEqualTo(com.nhom2.social.dto.FriendRelation.FRIENDS);
+        assertThat(friendshipService.getRelation("dung", "an")).isEqualTo(com.nhom2.social.dto.FriendRelation.FRIENDS);
+        assertThat(friendshipService.countFriends("an")).isEqualTo(initialFriends + 1);
+    }
+
+    @Test
+    @DisplayName("Kết bạn: Từ chối lời mời kết bạn")
+    void testRejectFriendRequest() {
+        // Trong seed data, hoa da gui loi moi cho an
+        assertThat(friendshipService.getRelation("an", "hoa")).isEqualTo(com.nhom2.social.dto.FriendRelation.PENDING_RECEIVED);
+
+        friendshipService.rejectRequest("an", "hoa");
+
+        assertThat(friendshipService.getRelation("an", "hoa")).isEqualTo(com.nhom2.social.dto.FriendRelation.NONE);
+    }
+
+    @Test
+    @DisplayName("Kết bạn: Hủy kết bạn (Unfriend)")
+    void testUnfriend() {
+        // Trong seed data, an va binh la ban be
+        assertThat(friendshipService.getRelation("an", "binh")).isEqualTo(com.nhom2.social.dto.FriendRelation.FRIENDS);
+
+        friendshipService.unfriend("an", "binh");
+
+        assertThat(friendshipService.getRelation("an", "binh")).isEqualTo(com.nhom2.social.dto.FriendRelation.NONE);
     }
 }

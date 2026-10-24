@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: main('Bạn bè', ~{::section}, 'friends')}">
+<body>
+<section>
+  <div class="container py-3" style="max-width: 960px;">
+
+    <!-- Tieu de va Navigation Tabs cho Ban be -->
+    <div class="fb-card p-3 mb-3">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div class="d-flex align-items-center gap-2">
+          <th:block th:replace="~{fragments/icon :: icon('users-fill', 28)}" />
+          <h1 class="fw-bold fs-4 mb-0">Bạn bè</h1>
+        </div>
+      </div>
+
+      <!-- Tabs chuyen doi: Loi moi ket ban / Tat ca ban be / Goi y -->
+      <div class="d-flex gap-2 border-top pt-3 flex-wrap">
+        <a th:href="@{/friends(tab='requests')}"
+           class="uiverse-btn-dismiss"
+           th:classappend="${activeTab == 'requests'} ? 'uiverse-btn-confirm' : ''">
+          <th:block th:replace="~{fragments/icon :: icon('bell', 16)}" />
+          <span>Lời mời kết bạn</span>
+          <span th:if="${pendingCount > 0}" class="badge bg-danger rounded-pill ms-1" th:text="${pendingCount}">2</span>
+        </a>
+
+        <a th:href="@{/friends(tab='all')}"
+           class="uiverse-btn-dismiss"
+           th:classappend="${activeTab == 'all'} ? 'uiverse-btn-confirm' : ''">
+          <th:block th:replace="~{fragments/icon :: icon('users', 16)}" />
+          <span>Tất cả bạn bè</span>
+          <span class="badge bg-secondary rounded-pill ms-1" th:text="${friendCount}">0</span>
+        </a>
+
+        <a th:href="@{/friends(tab='suggestions')}"
+           class="uiverse-btn-dismiss"
+           th:classappend="${activeTab == 'suggestions'} ? 'uiverse-btn-confirm' : ''">
+          <th:block th:replace="~{fragments/icon :: icon('plus', 16)}" />
+          <span>Gợi ý kết bạn</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ================= TAB 1: LOI MOI KET BAN ================= -->
+    <div th:if="${activeTab == 'requests'}">
+      <div th:if="${requests != null and !requests.empty}">
+        <h2 class="fs-6 fw-bold text-muted mb-3">Lời mời kết bạn đang chờ bạn phản hồi (<span th:text="${requests.size()}">0</span>)</h2>
+        <div class="row g-3">
+          <div th:each="req : ${requests}" class="col-sm-6 col-md-4 col-lg-3" th:id="'friend-request-card-' + ${req.user.username}">
+            <div class="fb-card h-100 d-flex flex-column" style="border-radius: 8px;">
+              <a th:href="@{'/users/' + ${req.user.username}}" class="d-block text-center pt-3 pb-2 bg-light">
+                <th:block th:replace="~{fragments/avatar :: avatar(${req.user}, 'fb-avatar-lg')}" />
+              </a>
+              <div class="p-3 d-flex flex-column flex-grow-1 justify-content-between">
+                <div>
+                  <a th:href="@{'/users/' + ${req.user.username}}" class="fw-bold text-dark text-decoration-none d-block text-truncate" th:text="${req.user.fullName}">
+                    Tên người gửi
+                  </a>
+                  <div class="text-muted small text-truncate" th:text="'@' + ${req.user.username}">@user</div>
+                  <div class="text-secondary small mt-1" style="font-size: 11px;" th:text="${req.createdAtFormatted}">10:00 18/10</div>
+                </div>
+
+                <!-- 2 Nut: Xac nhan va Xoa (Uiverse buttons) -->
+                <div class="d-flex flex-column gap-2 mt-3">
+                  <button type="button"
+                          class="uiverse-btn-confirm btn-friend-accept w-100"
+                          th:data-username="${req.user.username}">
+                    Xác nhận
+                  </button>
+                  <button type="button"
+                          class="uiverse-btn-dismiss btn-friend-reject w-100"
+                          th:data-username="${req.user.username}">
+                    Xóa lời mời
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${requests == null or requests.empty}" class="fb-empty-state-card">
+        <th:block th:replace="~{fragments/icon :: icon('users', 44)}" />
+        <div class="fb-empty-state-title">Không có lời mời kết bạn nào</div>
+        <p class="mb-0 text-muted">Khi có người gửi lời mời kết bạn, bạn sẽ thấy họ xuất hiện ở đây.</p>
+      </div>
+    </div>
+
+    <!-- ================= TAB 2: TAT CA BAN BE ================= -->
+    <div th:if="${activeTab == 'all'}">
+      <div th:if="${friends != null and !friends.empty}">
+        <h2 class="fs-6 fw-bold text-muted mb-3">Danh sách bạn bè (<span th:text="${friends.size()}">0</span>)</h2>
+        <div class="row g-3">
+          <div th:each="fr : ${friends}" class="col-sm-6 col-md-4 col-lg-3" th:id="'friend-card-' + ${fr.username}">
+            <div class="fb-card h-100 d-flex flex-column" style="border-radius: 8px;">
+              <a th:href="@{'/users/' + ${fr.username}}" class="d-block text-center pt-3 pb-2 bg-light">
+                <th:block th:replace="~{fragments/avatar :: avatar(${fr}, 'fb-avatar-lg')}" />
+              </a>
+              <div class="p-3 d-flex flex-column flex-grow-1 justify-content-between">
+                <div>
+                  <a th:href="@{'/users/' + ${fr.username}}" class="fw-bold text-dark text-decoration-none d-block text-truncate" th:text="${fr.fullName}">
+                    Tên bạn bè
+                  </a>
+                  <div class="text-muted small text-truncate" th:text="'@' + ${fr.username}">@user</div>
+                  <div th:if="${fr.bio != null and !#strings.isEmpty(fr.bio)}" class="text-secondary small mt-1 text-truncate" th:text="${fr.bio}">
+                    Bio...
+                  </div>
+                </div>
+
+                <div class="d-flex flex-column gap-2 mt-3">
+                  <a th:href="@{'/users/' + ${fr.username}}" class="uiverse-btn-confirm w-100">
+                    Xem trang
+                  </a>
+                  <button type="button"
+                          class="uiverse-btn-dismiss btn-friend-unfriend w-100"
+                          th:data-username="${fr.username}"
+                          style="font-size: 13px;">
+                    Hủy kết bạn
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${friends == null or friends.empty}" class="fb-empty-state-card">
+        <th:block th:replace="~{fragments/icon :: icon('users', 44)}" />
+        <div class="fb-empty-state-title">Chưa có bạn bè nào</div>
+        <p class="mb-0 text-muted">Hãy kết nối với những người bạn cùng lớp để bắt đầu chia sẻ nhé!</p>
+      </div>
+    </div>
+
+    <!-- ================= TAB 3: GOI Y KET BAN ================= -->
+    <div th:if="${activeTab == 'suggestions'}">
+      <div th:if="${suggestions != null and !suggestions.empty}">
+        <h2 class="fs-6 fw-bold text-muted mb-3">Những người bạn có thể biết</h2>
+        <div class="row g-3">
+          <div th:each="sg : ${suggestions}" class="col-sm-6 col-md-4 col-lg-3" th:id="'friend-sugg-card-' + ${sg.username}">
+            <div class="fb-card h-100 d-flex flex-column" style="border-radius: 8px;">
+              <a th:href="@{'/users/' + ${sg.username}}" class="d-block text-center pt-3 pb-2 bg-light">
+                <th:block th:replace="~{fragments/avatar :: avatar(${sg}, 'fb-avatar-lg')}" />
+              </a>
+              <div class="p-3 d-flex flex-column flex-grow-1 justify-content-between">
+                <div>
+                  <a th:href="@{'/users/' + ${sg.username}}" class="fw-bold text-dark text-decoration-none d-block text-truncate" th:text="${sg.fullName}">
+                    Tên gợi ý
+                  </a>
+                  <div class="text-muted small text-truncate" th:text="'@' + ${sg.username}">@user</div>
+                  <div th:if="${sg.bio != null and !#strings.isEmpty(sg.bio)}" class="text-secondary small mt-1 text-truncate" th:text="${sg.bio}">
+                    Bio...
+                  </div>
+                </div>
+
+                <div class="mt-3">
+                  <button type="button"
+                          class="uiverse-btn-confirm btn-friend-request w-100"
+                          th:data-username="${sg.username}">
+                    <th:block th:replace="~{fragments/icon :: icon('plus', 16)}" />
+                    <span>Thêm bạn bè</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div th:if="${suggestions == null or suggestions.empty}" class="fb-empty-state-card">
+        <th:block th:replace="~{fragments/icon :: icon('check', 44)}" />
+        <div class="fb-empty-state-title">Bạn đã kết nối với tất cả mọi người!</div>
+        <p class="mb-0 text-muted">Không còn người dùng gợi ý mới nào.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+</body>
+</html>

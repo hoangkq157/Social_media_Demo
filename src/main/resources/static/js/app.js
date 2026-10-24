@@ -353,4 +353,237 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
   }
+
+  // 7. Thao tac ket ban (AJAX Friend Requests & Actions)
+  function showToastNotification(msg, isSuccess = true) {
+    let container = document.querySelector('.fb-flash-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'fb-flash-container';
+      document.body.appendChild(container);
+    }
+    const alertEl = document.createElement('div');
+    alertEl.className = 'fb-flash-alert ' + (isSuccess ? 'fb-flash-success' : 'fb-flash-danger');
+    alertEl.textContent = msg;
+    container.appendChild(alertEl);
+    setTimeout(function () {
+      alertEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      alertEl.style.opacity = '0';
+      alertEl.style.transform = 'translateY(10px)';
+      setTimeout(function () { alertEl.remove(); }, 400);
+    }, 3500);
+  }
+
+  // 7.1 Gui loi moi ket ban
+  document.body.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-friend-request');
+    if (!btn) return;
+    e.preventDefault();
+    const username = btn.dataset.username;
+    if (!username || btn.dataset.busy === 'true') return;
+
+    btn.dataset.busy = 'true';
+    btn.disabled = true;
+
+    fetch('/api/friends/request/' + encodeURIComponent(username), {
+      method: 'POST',
+      headers: getHeaders(true)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Không thể gửi lời mời kết bạn');
+        return res.json();
+      })
+      .then(function (data) {
+        showToastNotification(data.message || 'Đã gửi lời mời kết bạn');
+        btn.className = 'uiverse-btn-dismiss btn-friend-cancel';
+        btn.innerHTML = '<span>Hủy lời mời</span>';
+      })
+      .catch(function (err) {
+        alert(err.message);
+      })
+      .finally(function () {
+        btn.dataset.busy = 'false';
+        btn.disabled = false;
+      });
+  });
+
+  // 7.2 Chap nhan loi moi ket ban
+  document.body.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-friend-accept');
+    if (!btn) return;
+    e.preventDefault();
+    const username = btn.dataset.username;
+    if (!username || btn.dataset.busy === 'true') return;
+
+    btn.dataset.busy = 'true';
+    btn.disabled = true;
+
+    fetch('/api/friends/accept/' + encodeURIComponent(username), {
+      method: 'POST',
+      headers: getHeaders(true)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Không thể chấp nhận lời mời');
+        return res.json();
+      })
+      .then(function (data) {
+        showToastNotification(data.message || 'Đã trở thành bạn bè');
+
+        const feedItem = document.getElementById('feed-request-item-' + username);
+        if (feedItem) {
+          feedItem.innerHTML = '<div class="text-success small fw-bold py-2">✓ Đã chấp nhận kết bạn</div>';
+          setTimeout(function () {
+            feedItem.remove();
+            const sec = document.getElementById('feedFriendRequestsSection');
+            if (sec && sec.querySelectorAll('[id^="feed-request-item-"]').length === 0) {
+              sec.remove();
+            }
+          }, 1500);
+        }
+
+        const friendReqCard = document.getElementById('friend-request-card-' + username);
+        if (friendReqCard) {
+          friendReqCard.innerHTML = '<div class="fb-card p-3 text-center text-success fw-bold">✓ Đã là bạn bè</div>';
+          setTimeout(function () { friendReqCard.remove(); }, 1500);
+        }
+
+        const profileActions = document.getElementById('profileFriendActions');
+        if (profileActions) {
+          profileActions.innerHTML = '<button type="button" class="uiverse-btn-dismiss btn-friend-unfriend" data-username="' + username + '"><span>Bạn bè (Hủy kết bạn)</span></button>';
+        }
+
+        const friendCountEl = document.getElementById('profileFriendCount');
+        if (friendCountEl && data.friendCount) {
+          friendCountEl.textContent = data.friendCount;
+        }
+      })
+      .catch(function (err) {
+        alert(err.message);
+        btn.disabled = false;
+      })
+      .finally(function () {
+        btn.dataset.busy = 'false';
+      });
+  });
+
+  // 7.3 Tu choi / Xoa loi moi ket ban
+  document.body.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-friend-reject');
+    if (!btn) return;
+    e.preventDefault();
+    const username = btn.dataset.username;
+    if (!username || btn.dataset.busy === 'true') return;
+
+    btn.dataset.busy = 'true';
+    btn.disabled = true;
+
+    fetch('/api/friends/reject/' + encodeURIComponent(username), {
+      method: 'POST',
+      headers: getHeaders(true)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Không thể xóa lời mời');
+        return res.json();
+      })
+      .then(function (data) {
+        showToastNotification(data.message || 'Đã xóa lời mời kết bạn');
+
+        const feedItem = document.getElementById('feed-request-item-' + username);
+        if (feedItem) feedItem.remove();
+
+        const friendReqCard = document.getElementById('friend-request-card-' + username);
+        if (friendReqCard) friendReqCard.remove();
+
+        const profileActions = document.getElementById('profileFriendActions');
+        if (profileActions) {
+          profileActions.innerHTML = '<button type="button" class="uiverse-btn-confirm btn-friend-request" data-username="' + username + '"><span>Thêm bạn bè</span></button>';
+        }
+      })
+      .catch(function (err) {
+        alert(err.message);
+        btn.disabled = false;
+      })
+      .finally(function () {
+        btn.dataset.busy = 'false';
+      });
+  });
+
+  // 7.4 Huy loi moi da gui
+  document.body.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-friend-cancel');
+    if (!btn) return;
+    e.preventDefault();
+    const username = btn.dataset.username;
+    if (!username || btn.dataset.busy === 'true') return;
+
+    btn.dataset.busy = 'true';
+    btn.disabled = true;
+
+    fetch('/api/friends/cancel/' + encodeURIComponent(username), {
+      method: 'POST',
+      headers: getHeaders(true)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Không thể hủy lời mời');
+        return res.json();
+      })
+      .then(function (data) {
+        showToastNotification(data.message || 'Đã hủy lời mời kết bạn');
+        btn.className = 'uiverse-btn-confirm btn-friend-request';
+        btn.innerHTML = '<span>Thêm bạn bè</span>';
+      })
+      .catch(function (err) {
+        alert(err.message);
+      })
+      .finally(function () {
+        btn.dataset.busy = 'false';
+        btn.disabled = false;
+      });
+  });
+
+  // 7.5 Huy ket ban (Unfriend)
+  document.body.addEventListener('click', function (e) {
+    const btn = e.target.closest('.btn-friend-unfriend');
+    if (!btn) return;
+    e.preventDefault();
+    const username = btn.dataset.username;
+    if (!username || btn.dataset.busy === 'true') return;
+
+    if (!confirm('Bạn có chắc chắn muốn hủy kết bạn với @' + username + ' không?')) {
+      return;
+    }
+
+    btn.dataset.busy = 'true';
+    btn.disabled = true;
+
+    fetch('/api/friends/unfriend/' + encodeURIComponent(username), {
+      method: 'POST',
+      headers: getHeaders(true)
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error('Không thể hủy kết bạn');
+        return res.json();
+      })
+      .then(function (data) {
+        showToastNotification(data.message || 'Đã hủy kết bạn');
+
+        const card = document.getElementById('friend-card-' + username);
+        if (card) card.remove();
+
+        btn.className = 'uiverse-btn-confirm btn-friend-request';
+        btn.innerHTML = '<span>Thêm bạn bè</span>';
+
+        const friendCountEl = document.getElementById('profileFriendCount');
+        if (friendCountEl && typeof data.friendCount !== 'undefined') {
+          friendCountEl.textContent = data.friendCount;
+        }
+      })
+      .catch(function (err) {
+        alert(err.message);
+      })
+      .finally(function () {
+        btn.dataset.busy = 'false';
+        btn.disabled = false;
+      });
+  });
 });
