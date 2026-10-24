@@ -19,8 +19,10 @@ Mở terminal (CMD/PowerShell/Git Bash) trong thư mục dự án:
 *(Máy chưa có JDK ở lab-tools: cài JDK 21 bất kỳ rồi chỉ JAVA_HOME tới thư mục cài.)*
 
 ## Cách TẮT
+- **Dễ nhất — nhấp đúp file `tat_demo.bat`:** tự tìm process đang giữ cổng 8080 và tắt hẳn (dùng được cả khi Ctrl+C không tắt được — trường hợp java "mồ côi" vẫn giữ cổng trên Windows).
 - **Tắt an toàn (khuyên dùng):** bấm **Ctrl + C** trong cửa sổ đang chạy → gõ `Y` (hoặc bấm Ctrl+C lần nữa) → app dừng, cổng 8080 tự do.
-- Hoặc đơn giản **đóng cửa sổ terminal** đang chạy app.
+- Hoặc đơn giản **đóng cửa sổ terminal** đang chạy app, rồi chạy `tat_demo.bat` cho chắc.
+- **Tắt thủ công:** `netstat -ano | findstr :8080` để tìm PID, rồi `taskkill /F /PID <PID>`.
 - Kiểm tra đã tắt chưa: mở http://localhost:8080 — nếu trình duyệt báo "không kết nối được" là đã tắt.
 
 ## Lưu ý khi demo

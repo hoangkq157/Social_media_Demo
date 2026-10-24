@@ -17,7 +17,8 @@ echo   Sau khi thay dong: Tomcat started on port 8080
 echo   - Mo trinh duyet:  http://localhost:8080
 echo   - Tai khoan: an / binh / chi  -  mat khau 123456
 echo   - Xem CSDL:       http://localhost:8080/h2-console
-echo   - TAT DEMO: nhan Ctrl+C (hoac dong cua so nay)
+echo   - TAT DEMO: nhan Ctrl+C, chay tat_demo.bat,
+echo     hoac tat cua so nay roi chay tat_demo.bat cho chac
 echo ============================================
 call mvnw.cmd spring-boot:run
 pause
